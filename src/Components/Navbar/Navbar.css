@@ -1,0 +1,81 @@
+/* Navbar Container */
+.navbar {
+  background-color: #f8f8f8;
+  padding: 15px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Flex Container */
+.containersnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Logo Styling */
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  background-color: #4f46e5;
+  padding: 5px;
+  border-radius: 50%;
+}
+
+/* Logo Text */
+.logo-text {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-left: 10px;
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #333;
+}
+
+/* Button */
+.nav-buttonss {
+  display: flex;
+  align-items: center;
+  color: black;
+  background-color: #eaeaea;
+  border: none;
+  width: 15%;
+  justify-content: space-around;
+  padding: 8px 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.nav-button:hover {
+  background-color: #d5d5d5;
+}
+
+/* Button Icon */
+.button-icon {
+  width: 18px;
+  height: 18px;
+  margin-left: 8px;
+}

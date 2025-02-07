@@ -1,0 +1,118 @@
+/* Section Styling */
+.info-section {
+  padding: 80px 20px;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+
+/* Container */
+.containers {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Section Header */
+.section-header {
+  margin-bottom: 40px;
+}
+.section-header h2{
+  font-family: 'Open Sans';
+}
+
+.subheading {
+  color: #6366f1;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.heading {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.description {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Features Section */
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.feature {
+  flex: 1 1 calc(50% - 20px);
+  max-width: 500px;
+  padding: 20px;
+  border-left: 2px solid #ddd;
+  text-align: left;
+}
+
+/* Feature Titles */
+.feature-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.feature-desc {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+/* Learn More Link */
+.learn-more {
+  color: #6366f1;
+  font-weight: bold;
+  font-family: 'Poppins';
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.learn-more svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 5px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+/* Button */
+.main-button {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-top: 40px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.main-button:hover {
+  background: #4f46e5;
+}
+
+@media (max-width: 768px) {
+  .feature {
+    flex: 1 1 100%;
+    max-width: 100%;
+    border-left: none;
+    border-top: 2px solid #ddd;
+    padding-top: 20px;
+  }
+}
