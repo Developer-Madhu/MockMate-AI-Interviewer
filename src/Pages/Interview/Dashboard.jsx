@@ -6,10 +6,13 @@ const Dashboard = () => {
   useEffect(() => {
     // Retrieve user from localStorage
     const storedUser = localStorage.getItem("userData");
+    const userscores = localStorage.getItem('userscore')
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+  const userscores = localStorage.getItem('userscore')
+
 
   return (
     <div className="p-6">
@@ -24,14 +27,14 @@ const Dashboard = () => {
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6 rounded-xl shadow-lg flex justify-between items-center">
         <div className="text-center">
           <h3 className="text-3xl font-bold">0</h3>
-          <p className="text-sm">Total Interviews</p>
+          <p className="text-sm">Questions Attempted</p>
         </div>
         <div className="text-center">
-          <h3 className="text-3xl font-bold">0</h3>
+          <h3 className="text-3xl font-bold">{userscores}</h3>
           <p className="text-sm">Average Score</p>
         </div>
         <div className="text-center">
-          <h3 className="text-3xl font-bold">0</h3>
+          <h3 className="text-3xl font-bold">50</h3>
           <p className="text-sm">Target Score</p>
         </div>
       </div>

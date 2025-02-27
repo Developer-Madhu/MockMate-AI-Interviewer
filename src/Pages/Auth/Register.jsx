@@ -68,8 +68,10 @@
 // export default Register;
 import React, { useState } from "react";
 import "./Register.css";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -105,6 +107,9 @@ const Register = () => {
         localStorage.setItem("userData", JSON.stringify(formData));
 
         setMessage("Registration successful!");
+        setTimeout(() => {
+            navigate("/login");
+        }, 2000)
 
         // Clear form fields
         setFormData({
@@ -118,9 +123,6 @@ const Register = () => {
 
     return (
         <div className="ring">
-            <i style={{ "--clr": "#00ff0a" }}></i>
-            <i style={{ "--clr": "#ff0057" }}></i>
-            <i style={{ "--clr": "#fffd44" }}></i>
             <div className="register">
                 <h2>Register</h2>
                 {message && <p className="success-message">{message}</p>}

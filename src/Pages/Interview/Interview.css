@@ -45,9 +45,21 @@
     gap: 10px;
     width: 100%;
   }
-  
+  .verify-button{
+    background-color: blue;
+    color: white;
+    border-radius: 12px;
+    padding: 10px;
+  }
+  .answer-box{
+    outline: none;
+    width: 100%;
+    padding: 10px ;
+    border: 1px solid black;
+  }
   input {
     flex: 1;
+    width: 30em;
     padding: 10px;
     font-size: 1rem;
     border: 1px solid #ccc;
