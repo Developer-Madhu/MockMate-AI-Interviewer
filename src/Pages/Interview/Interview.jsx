@@ -36,6 +36,11 @@ function Interview() {
 
       const data = await response.json();
       setGeneratedText(data.response);
+
+      const previousQuestions = JSON.parse(localStorage.getItem("questionHistory")) || [];
+      const updatedQuestions = [...previousQuestions, data.response];
+      localStorage.setItem("questionHistory", JSON.stringify(updatedQuestions));
+
     } catch (err) {
       console.error("Error:", err);
       setError(err.message);
