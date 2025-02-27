@@ -12,6 +12,7 @@ const Dashboard = () => {
     }
   }, []);
   const userscores = localStorage.getItem('userscore')
+  const ques = JSON.parse(localStorage.getItem('questionHistory'))
 
 
   return (
@@ -26,7 +27,7 @@ const Dashboard = () => {
       {/* Overview Section */}
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6 rounded-xl shadow-lg flex justify-between items-center">
         <div className="text-center">
-          <h3 className="text-3xl font-bold">0</h3>
+          <h3 className="text-3xl font-bold">{ques.length}</h3>
           <p className="text-sm">Questions Attempted</p>
         </div>
         <div className="text-center">
