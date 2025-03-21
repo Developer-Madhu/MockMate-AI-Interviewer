@@ -17,7 +17,7 @@ const ImageSection = () => {
           <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
             Experience the power of AI-driven interview preparation
           </p>
-        </div>
+            </div>
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
@@ -38,21 +38,21 @@ const ImageSection = () => {
                 />
                 {/* Overlay Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              </div>
-            </div>
+          </div>
+        </div>
 
             {/* Decorative Elements */}
             <div className="absolute -top-6 -right-6 w-12 h-12 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-full flex items-center justify-center shadow-lg transform rotate-12 group-hover:rotate-45 transition-transform duration-500">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+                </svg>
             </div>
             <div className="absolute -bottom-6 -left-6 w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center shadow-lg transform -rotate-12 group-hover:-rotate-45 transition-transform duration-500">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
+                </svg>
           </div>
+        </div>
 
           {/* Right Column - Features */}
           <div className="space-y-8">
@@ -63,7 +63,7 @@ const ImageSection = () => {
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
-                </div>
+      </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-violet-600 transition-colors duration-300">
                     AI-Powered Insights
@@ -71,9 +71,9 @@ const ImageSection = () => {
                   <p className="text-gray-600">
                     Get personalized feedback and recommendations based on your interview performance
                   </p>
-                </div>
-              </div>
             </div>
+          </div>
+        </div>
 
             {/* Feature 2 */}
             <div className="group p-6 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-500 border border-gray-100">
@@ -90,9 +90,9 @@ const ImageSection = () => {
                   <p className="text-gray-600">
                     Receive instant feedback on your responses and body language during mock interviews
                   </p>
-                </div>
-              </div>
             </div>
+          </div>
+        </div>
 
             {/* Feature 3 */}
             <div className="group p-6 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-500 border border-gray-100">
