@@ -76,75 +76,51 @@
 // };
 
 // export default Login;
-import React, { useState, useEffect } from "react";
-import { data, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Login.css";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./AuthContext"; // Assuming this manages authentication state
 
 const Login = () => {
     const [formData, setFormData] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
-    const { login } = useAuth()
+    const { login } = useAuth(); // Custom auth hook to store user session
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const storedUser = localStorage.getItem("userData");
-
-        // if (token || storedUser) {
-        //     // Redirect to the interview page if the user is already logged in
-        //     navigate("/dashboard", { state: { user: JSON.parse(storedUser) } });
-        // }
-    }, []);
-
+    // ✅ Handle input change
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         const res = await axios.post("http://localhost:3000/login", formData);
-
-    //         if (res.data && res.data.token) {
-    //             console.log("User logged in:", res.data.user);
-
-    //             // Store user data and token in localStorage
-    //             localStorage.setItem("token", res.data.token);
-    //             localStorage.setItem("user", JSON.stringify(res.data.user));
-
-    //             // Redirect to the interview page with user details
-    //             navigate("/dashboard", { state: { user: res.data.user } });
-    //         } else {
-    //             setMessage("Login failed. Please check your credentials.");
-    //         }
-    //     } catch (e) {
-    //         setMessage("Something went wrong!");
-    //     }
-    // };
+    // ✅ Handle form submission
     const handleSubmit = async (e) => {
-        const token = localStorage.getItem("token");
-        const storedUser = localStorage.getItem("userData");
         e.preventDefault();
+        setMessage(""); // Clear previous messages
+
         try {
-            const res = await axios.post("http://localhost:3000/login", formData);
-            console.log("Server Response:", res.data); // Log the response
+            // 🔹 Send login request to the backend
+            const res = await axios.post(
+                "http://localhost:1001/login",
+                formData,
+                { withCredentials: true } // Ensures cookies are sent & received
+            );
 
-            if (res.data && res.data.token) {
-                console.log("User logged in:", res.data.user);
+            console.log("Server Response:", res.data); // Debugging
 
-                login(res.data.token, res.data.user)
+            if (res.data.success) {
+                console.log("User logged in:", res.data.user)
+                // 🔹 Store user data in context (No localStorage needed)
+                login(res.data.token, res.data.user);
 
-                localStorage.setItem("token", res.data.token);
-                localStorage.setItem("user", JSON.stringify(res.data.user));
-
-                navigate("/dashboard", { state: { user: res.data.user } });
+                // 🔹 Redirect to dashboard
+                navigate("/dashboard");
             } else {
-                setMessage("Login failed. Please check your credentials.");
+                setMessage(res.data.msg || "Login failed!");
             }
-        } catch (e) {
-            setMessage("Something went wrong!");
+        } catch (error) {
+            setMessage("Something went wrong! Please try again.");
+            console.error("Login Error:", error);
         }
     };
 
@@ -187,4 +163,4 @@ const Login = () => {
     );
 };
 
-export default Login;   
+export default Login;

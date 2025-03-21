@@ -54,7 +54,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../Pages/Auth/AuthContext"; // Adjust the import path as needed
 
 const Navbar = () => {
-    const { isLoggedIn, logout } = useAuth(); // Get the authentication state and logout function
+    const { user, isLoggedIn ,logout } = useAuth(); // Get the authentication state and logout function
     const [menuOpen, setMenuOpen] = useState(false); // State to control menu visibility
 
     return (
@@ -87,10 +87,15 @@ const Navbar = () => {
             <nav className="hidden md:flex text-black space-x-6">
                 <Link to="/dashboard" >Dashboard</Link>
                 <Link to="/interview" >Practice</Link>
-                {isLoggedIn ? (
-                    <button onClick={logout} className="hover:text-red-400">Log Out</button>
+                {user ? (
+                    // ✅ Show username & logout button if logged in
+                    <div className="flex items-center gap-4">
+                        <span className="text-lg">{user.username}!</span>
+                        <button className="bg-red-500 px-2 py-0 rounded" onClick={logout}>Logout</button>
+                    </div>
                 ) : (
-                    <Link to="/login" className="hover:text-yellow-400">Sign In</Link>
+                    // ✅ Show Sign In link if not logged in
+                    <Link to="/login" className="text-lg">Sign In</Link>
                 )}
             </nav>
 

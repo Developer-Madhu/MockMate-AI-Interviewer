@@ -69,6 +69,7 @@
 import React, { useState } from "react";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -90,7 +91,7 @@ const Register = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.termsAccepted) {
@@ -102,6 +103,11 @@ const Register = () => {
             setMessage("Passwords do not match.");
             return;
         }
+
+        const senddata = axios.post('http://localhost:1001/register', formData)
+        const res = await senddata
+        console.log(res.data)
+
 
         // Store form data in local storage
         localStorage.setItem("userData", JSON.stringify(formData));

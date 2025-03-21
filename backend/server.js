@@ -23,7 +23,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 app.post('/interview', async (req, res) => {
   const { prompt, answer } = req.body;
 
-  if (answer) {
+  if (answer) { 
     const feedbackPrompt = `Evaluate the following answer and provide feedback in a structured bullet-point format. Focus on end/final answer rather than complete context or steps & Identify mistakes and highlight their categories in bold (use *text* format). Provide short, precise corrections for each mistake in bullet points. Avoid long paragraphs—use concise and actionable feedback:\n
     Question: ${prompt}\n
     Answer: ${answer}\n

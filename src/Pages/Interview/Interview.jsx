@@ -21,7 +21,7 @@ function Interview() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3000/interview', {
+      const response = await fetch('http://localhost:1001/interview', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ function Interview() {
 
   const handleVerifyAnswer = async () => {
     try {
-      const response = await fetch("http://localhost:3000/interview", {
+      const response = await fetch("http://localhost:1001/interview", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
