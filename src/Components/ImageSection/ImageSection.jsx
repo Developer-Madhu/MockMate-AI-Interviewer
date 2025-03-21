@@ -1,4 +1,5 @@
 import React from 'react';
+import interviewimg from '../../assets/interviewimg.jpg'
 
 const ImageSection = () => {
   return (
@@ -31,7 +32,7 @@ const ImageSection = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 blur-xl opacity-50"></div>
               <div className="relative aspect-square rounded-xl overflow-hidden">
                 <img 
-                  src="/interview-success.jpg" 
+                  src={interviewimg} 
                   alt="Interview Success Visualization"
                   className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                 />
