@@ -47,7 +47,7 @@ const Navbar = () => {
                 <path d="M12 2C7 2 4 6 4 10c0 2.5 1.5 4.5 3 6a4.8 4.8 0 0 1 1 3h8a4.8 4.8 0 0 1 1-3c1.5-1.5 3-3.5 3-6 0-4-3-8-8-8z" />
               </svg>
               <span className="text-xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                MockMate.AI
+                MockMate AI
               </span>
             </div>
           </motion.div>
