@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { useAuth } from "../Auth/AuthContext"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Bell, Search, Menu, X, TrendingUp, Users, Target, Activity, ChevronRight } from "lucide-react"
+import { Bell, Search, TrendingUp, Users, Target, Activity } from "lucide-react"
 import { motion } from "framer-motion"
+import Sidebar from "../../components/Sidebar"
 
 const Dashboard = () => {
   const { user } = useAuth()
-  const [isOpen, setIsOpen] = useState(false)
   const [hoveredCard, setHoveredCard] = useState(null)
 
   // Sample data for the chart
@@ -48,101 +48,13 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <motion.div 
-        initial={{ x: -100 }}
-        animate={{ x: 0 }}
-        className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 hidden lg:block"
-      >
-        <div className="flex flex-col h-full">
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="flex items-center h-16 px-6 border-b border-gray-200"
-          >
-            <span className="text-xl font-bold text-blue-500">
-              MockMate
-            </span>
-          </motion.div>
-          <nav className="flex-1 p-4 space-y-2">
-            {['Dashboard', 'Interview', 'Settings'].map((item) => (
-              <motion.a
-                key={item}
-                href={`/${item.toLowerCase()}`}
-                whileHover={{ scale: 1.02, x: 5 }}
-                whileTap={{ scale: 0.98 }}
-                className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                  item === 'Dashboard' 
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {item}
-                <ChevronRight className="w-4 h-4 ml-auto" />
-              </motion.a>
-            ))}
-          </nav>
-        </div>
-      </motion.div>
-
-      {/* Mobile menu button */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="lg:hidden fixed top-0 left-0 p-4 z-50"
-      >
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-2 text-gray-600 hover:text-gray-900"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </motion.button>
-      </motion.div>
-
-      {/* Mobile navigation */}
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-40 lg:hidden"
-        >
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
-            className="fixed inset-0 bg-black" 
-            onClick={() => setIsOpen(false)} 
-          />
-          <motion.div 
-            initial={{ x: -100 }}
-            animate={{ x: 0 }}
-            className="fixed inset-y-0 left-0 w-64 bg-white p-4"
-          >
-            <div className="flex items-center h-16 mb-4">
-              <span className="text-xl font-bold text-blue-500">MockMate</span>
-            </div>
-            <nav className="space-y-2">
-              <a href="/dashboard" className="block px-4 py-2 text-white bg-blue-500 rounded-lg">
-                Dashboard
-              </a>
-              <a href="/interview" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-                Interview
-              </a>
-              <a href="/settings" className="block px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-                Settings
-              </a>
-            </nav>
-          </motion.div>
-        </motion.div>
-      )}
-
-      {/* Main content */}
+      <Sidebar />
       <div className="lg:pl-64">
         {/* Header */}
         <motion.header 
           initial={{ y: -100 }}
           animate={{ y: 0 }}
-          className="bg-white border-b border-gray-200 h-16 fixed top-0 right-0 left-0 lg:left-64 flex items-center justify-between px-6 backdrop-blur-sm bg-white/80"
+          className="border-b border-gray-200 h-16 fixed top-0 right-0 left-0 lg:left-64 flex items-center justify-between px-6 backdrop-blur-sm bg-white/80"
         >
           <div className="flex items-center flex-1">
             <div className="relative w-64">
