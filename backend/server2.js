@@ -328,7 +328,7 @@ function authenticateToken(req, res, next) {
 app.get("/protected", authenticateToken, (req, res) => {
     res.json({ message: "Welcome to the protected route", user: req.user });
 });
-const PORT = process.env.PORT || 1001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

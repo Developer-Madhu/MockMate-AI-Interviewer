@@ -4,9 +4,10 @@ import HomePage from './Pages/HomePage'
 import Login from './Pages/Auth/Login'
 import Interview from './Pages/Interview/Interview'
 import Register from './Pages/Auth/Register'
-import Dashboard from './Pages/Interview/Dashboard'
 import { AuthProvider } from './Pages/Auth/AuthContext'
 import QuestionHistory from './Pages/Interview/QuestionHistory'
+import Dashboard from './Pages/Interview/Dashboard'
+
 const App = () => {
   return (
     <AuthProvider>
