@@ -7,34 +7,56 @@ import Sidebar from "../../components/Sidebar"
 
 const Dashboard = () => {
   const { user } = useAuth()
-  const [hoveredCard, setHoveredCard] = useState(null)
+  const [stats, setStats] = useState({
+    totalQuestions: 0,
+    averageScore: 0,
+    questionsByMonth: []
+  })
+  const [recentQuestions, setRecentQuestions] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  // Sample data for the chart
-  const data = [
-    { name: 'Jan', score: 65 },
-    { name: 'Feb', score: 75 },
-    { name: 'Mar', score: 85 },
-    { name: 'Apr', score: 80 },
-    { name: 'May', score: 90 },
-    { name: 'Jun', score: 95 },
-  ]
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch statistics
+        const statsResponse = await fetch(`http://localhost:3000/api/questions/stats/${user.id}`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+        const statsData = await statsResponse.json();
+        setStats(statsData);
 
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 }
-  }
+        // Fetch recent questions
+        const questionsResponse = await fetch(`http://localhost:5000/api/questions/user/${user.id}`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+        const questionsData = await questionsResponse.json();
+        setRecentQuestions(questionsData.slice(0, 5)); // Get only the 5 most recent questions
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
 
   const statsCards = [
     {
       title: "Questions Attempted",
-      value: user?.questionHistory?.length || 0,
+      value: stats.totalQuestions,
       icon: <Activity className="w-6 h-6" />,
       color: "from-blue-500 to-blue-400"
     },
     {
       title: "Average Score",
-      value: user?.score || 0,
+      value: Math.round(stats.averageScore),
       icon: <TrendingUp className="w-6 h-6" />,
       color: "from-blue-500 to-blue-400"
     },
@@ -86,111 +108,70 @@ const Dashboard = () => {
 
         {/* Main content */}
         <main className="p-6 pt-24">
-          <div className="max-w-7xl mx-auto space-y-6">
-            <motion.h1 
-              {...fadeInUp}
-              className="text-3xl font-bold text-gray-900"
-            >
-              Welcome back, <span className="text-blue-500">{user?.username}</span>!
-            </motion.h1>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {statsCards.map((card, index) => (
-                <motion.div
-                  key={card.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  onHoverStart={() => setHoveredCard(index)}
-                  onHoverEnd={() => setHoveredCard(null)}
-                  className="relative overflow-hidden bg-white p-6 rounded-xl shadow-lg border border-gray-100"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">{card.title}</p>
-                      <h3 className="text-3xl font-bold mt-2">{card.value}</h3>
-                    </div>
-                    <div className={`p-3 rounded-lg bg-gradient-to-r ${card.color} text-white`}>
-                      {card.icon}
-                    </div>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {statsCards.map((card, index) => (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white rounded-lg shadow-sm p-6"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">{card.title}</p>
+                    <p className="text-2xl font-semibold mt-1">{card.value}</p>
                   </div>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: hoveredCard === index ? 0.1 : 0 }}
-                    className={`absolute inset-0 bg-gradient-to-r ${card.color}`}
-                  />
+                  <div className={`p-3 rounded-full bg-gradient-to-br ${card.color}`}>
+                    {card.icon}
+                  </div>
+        </div>
+              </motion.div>
+            ))}
+        </div>
+
+          {/* Performance Chart */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h2 className="text-lg font-semibold mb-4">Performance Overview</h2>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.questionsByMonth}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="score" fill="#3B82F6" />
+                </BarChart>
+              </ResponsiveContainer>
+        </div>
+      </div>
+
+          {/* Recent Activity */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
+            <div className="space-y-4">
+              {recentQuestions.map((question, index) => (
+                <motion.div
+                  key={question._id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                >
+                  <div>
+                    <p className="font-medium">{question.question}</p>
+                    <p className="text-sm text-gray-600">Score: {question.score}</p>
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {new Date(question.createdAt).toLocaleDateString()}
+         </div>
                 </motion.div>
               ))}
-            </div>
-
-            {/* Performance Chart */}
-            <motion.div 
-              {...fadeInUp}
-              className="bg-white p-6 rounded-xl shadow-lg border border-gray-100"
-            >
-              <h2 className="text-xl font-bold mb-6">Performance Overview</h2>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data}>
-                    <defs>
-                      <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.2}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" opacity={0.4} />
-                    <XAxis dataKey="name" stroke="#6B7280" />
-                    <YAxis stroke="#6B7280" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#FFFFFF',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: '8px',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                      }}
-                    />
-                    <Bar 
-                      dataKey="score" 
-                      fill="url(#colorScore)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </motion.div>
-
-            {/* Recent Activity */}
-            <motion.div 
-              {...fadeInUp}
-              className="bg-white p-6 rounded-xl shadow-lg border border-gray-100"
-            >
-              <h2 className="text-xl font-bold mb-6">Recent Activity</h2>
-              <div className="space-y-4">
-                {user?.questionHistory?.slice(0, 5).map((question, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ x: 5 }}
-                    className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900">{question.question}</p>
-                      <p className="text-sm text-gray-500">Score: {question.score}</p>
-                    </div>
-                    <span className="text-sm text-gray-500">
-                      {new Date(question.timestamp).toLocaleDateString()}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
+         </div>
           </div>
         </main>
-      </div>
+       </div>
     </div>
   )
 }

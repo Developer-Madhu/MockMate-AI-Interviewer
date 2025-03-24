@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"
 import Sidebar from "../../components/Sidebar"
+import { useAuth } from "../Auth/AuthContext"
 
 function Interview() {
   const [prompt, setPrompt] = useState("");
@@ -11,6 +11,8 @@ function Interview() {
   const [score, setScore] = useState(0)
   const [allscore, setallscore] = useState(() => { return parseInt(localStorage.getItem("score"), 10) || 0 })
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     localStorage.setItem("score", score);
@@ -64,32 +66,49 @@ function Interview() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3000/interview', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3000/interview", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ prompt }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Error generating content");
+        throw new Error("Failed to get response");
       }
 
       const data = await response.json();
       setGeneratedText(data.response);
 
-      const previousQuestions = JSON.parse(localStorage.getItem("questionHistory")) || [];
-      const updatedQuestions = [...previousQuestions, data.response];
-      localStorage.setItem("questionHistory", JSON.stringify(updatedQuestions));
+      // Save the question to database
+      const questionResponse = await fetch("http://localhost:3000/interview", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          question: prompt,
+          answer: data.response,
+          feedback: data.feedback || "",
+          score: 0 // Initial score is 0 until verified
+        }),
+      });
 
-    } catch (err) {
-      console.error("Error:", err);
-      setError(err.message);
+      if (!questionResponse.ok) {
+        throw new Error("Failed to save question");
+      }
+
+      setPrompt("");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,7 +120,11 @@ function Interview() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ question: generatedText, answer: userAnswer }),
+        body: JSON.stringify({ 
+          question: generatedText, 
+          answer: userAnswer,
+          verify: true // Add this flag to indicate this is a verification request
+        }),
       });
 
       if (!response.ok) {
@@ -110,10 +133,11 @@ function Interview() {
 
       const data = await response.json();
       setFeedback(data.feedback);
+      
+      // Update score if the answer is correct
       if (data.feedback.includes("Correctness") || data.feedback.includes("Good job")) {
         setScore(prevScore => prevScore + 1);
-        allscore.push(score)
-        localStorage.setItem('userscore', score)
+        localStorage.setItem('score', score + 1);
       }
     } catch (err) {
       console.error("Error:", err);

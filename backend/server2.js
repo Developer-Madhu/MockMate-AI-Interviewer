@@ -123,6 +123,7 @@ const ConnectDB = require('./database/database.js')
 const userModel = require('./models/userModel.js')
 require('dotenv').config();
 const cors = require("cors");
+const Question = require('./models/questions.js');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
@@ -206,6 +207,21 @@ app.post('/interview', async (req, res) => {
 
         try {
             const feedbackResult = await agent.processInput(feedbackPrompt);
+            
+            // Update the question in database with feedback
+            if (req.headers.authorization) {
+                const token = req.headers.authorization.split(' ')[1];
+                const decoded = jwt.verify(token, 'supersecret12');
+                
+                await Question.findOneAndUpdate(
+                    { userId: decoded.id, question: prompt },
+                    { 
+                        feedback: feedbackResult,
+                        score: feedbackResult.includes("Correctness") || feedbackResult.includes("Good job") ? 1 : 0
+                    }
+                );
+            }
+            
             return res.json({ feedback: feedbackResult });
         } catch (error) {
             console.error("Error analyzing the answer:", error);
@@ -223,6 +239,22 @@ app.post('/interview', async (req, res) => {
 
         try {
             const result = await agent.processInput(mainprompt);
+            
+            if (req.headers.authorization) {
+                const token = req.headers.authorization.split(' ')[1];
+                const decoded = jwt.verify(token, 'supersecret12');
+                
+                const newQuestion = new Question({
+                    userId: decoded.id,
+                    question: prompt,
+                    answer: result,
+                    feedback: "",
+                    score: 0
+                });
+                
+                await newQuestion.save();
+            }
+            
             res.json({ response: result });
         } catch (error) {
             console.error("Error generating content:", error);
@@ -232,7 +264,7 @@ app.post('/interview', async (req, res) => {
 });
 // Register Route
 app.post("/register", async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, education, interests } = req.body;
     if (!username || !password) {
         res.json({ success: false, msg: "Fill all the fields" })
     } else {
@@ -242,7 +274,7 @@ app.post("/register", async (req, res) => {
                 return res.json({ success: false, msg: "User already exists" });
             } else {
                 const hashpass = await bcrypt.hash(password, 10)
-                const newuser = new userModel({ username, email, password: hashpass })
+                const newuser = new userModel({ username, email, password: hashpass, education, interests })
                 await newuser.save()
                 const webtokens = jwt.sign({ id: newuser._id }, 'supersecret12', { expiresIn: '7d' });
                 res.cookie('token', webtokens, {
@@ -263,16 +295,16 @@ app.post("/register", async (req, res) => {
 
 // Login Route
 app.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     // ✅ Check required fields
-    if (!username || !password) {
+    if (!email || !password) {
         return res.json({ success: false, msg: "Please enter the details!" });
     }
 
     try {
         // ✅ Check if user exists
-        const foundUser = await userModel.findOne({ username });
+        const foundUser = await userModel.findOne({ email });
         if (!foundUser) {
             return res.json({ success: false, msg: "Invalid user" });
         }
