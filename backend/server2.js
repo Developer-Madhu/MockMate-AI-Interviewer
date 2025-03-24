@@ -332,6 +332,8 @@ app.post("/login", async (req, res) => {
                 id: foundUser._id,
                 username: foundUser.username,
                 email: foundUser.email,
+                education: foundUser.education,
+                interests: foundUser.interests,
                 score: foundUser.score || 0,  // If you store scores
                 questionHistory: foundUser.questionHistory || [] // Fetch question history if available
             },

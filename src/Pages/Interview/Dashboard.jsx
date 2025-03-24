@@ -1,177 +1,251 @@
 import React, { useEffect, useState } from "react"
-import { useAuth } from "../Auth/AuthContext"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Bell, Search, TrendingUp, Users, Target, Activity } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
-import Sidebar from "../../components/Sidebar"
+import {
+  TrendingUp,
+  Users,
+  Target,
+  Activity,
+  ChevronRight,
+  LogOut,
+  Bell,
+  Search,
+} from "lucide-react"
 
 const Dashboard = () => {
-  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [userData, setUserData] = useState(null)
   const [stats, setStats] = useState({
     totalQuestions: 0,
     averageScore: 0,
-    questionsByMonth: []
+    totalScore: 0,
+    recentActivity: [],
   })
-  const [recentQuestions, setRecentQuestions] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        // Fetch statistics
-        const statsResponse = await fetch(`http://localhost:3000/api/questions/stats/${user.id}`, {
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`
-          }
-        });
-        const statsData = await statsResponse.json();
-        setStats(statsData);
-
-        // Fetch recent questions
-        const questionsResponse = await fetch(`http://localhost:5000/api/questions/user/${user.id}`, {
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`
-          }
-        });
-        const questionsData = await questionsResponse.json();
-        setRecentQuestions(questionsData.slice(0, 5)); // Get only the 5 most recent questions
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user) {
-      fetchDashboardData();
+    // Check if user is logged in
+    const token = localStorage.getItem("token")
+    if (!token) {
+      navigate("/login")
+      return
     }
-  }, [user]);
+
+    // Get user data from localStorage
+    const storedUser = localStorage.getItem("user")
+    if (storedUser) {
+      setUserData(JSON.parse(storedUser))
+    }
+
+    // Get progress data from localStorage
+    const storedProgress = localStorage.getItem("progress")
+    if (storedProgress) {
+      const progressData = JSON.parse(storedProgress)
+      setStats({
+        totalQuestions: progressData.totalQuestions || 0,
+        averageScore: progressData.averageScore || 0,
+        totalScore: progressData.score || 0,
+        recentActivity: userData?.questionHistory || [],
+      })
+    }
+
+    setIsLoading(false)
+  }, [navigate])
+
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    localStorage.removeItem("progress")
+    navigate("/login")
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    )
+  }
+
+  if (!userData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-red-500">User data not found. Please login again.</div>
+      </div>
+    )
+  }
 
   const statsCards = [
     {
-      title: "Questions Attempted",
+      title: "Total Questions",
       value: stats.totalQuestions,
-      icon: <Activity className="w-6 h-6" />,
-      color: "from-blue-500 to-blue-400"
+      icon: <Target className="h-6 w-6 text-blue-500" />,
+      gradient: "from-blue-500 to-blue-600",
+      color: "text-blue-500",
     },
     {
       title: "Average Score",
-      value: Math.round(stats.averageScore),
-      icon: <TrendingUp className="w-6 h-6" />,
-      color: "from-blue-500 to-blue-400"
+      value: `${stats.averageScore.toFixed(1)}%`,
+      icon: <TrendingUp className="h-6 w-6 text-green-500" />,
+      gradient: "from-green-500 to-green-600",
+      color: "text-green-500",
     },
     {
-      title: "Target Score",
-      value: 50,
-      icon: <Target className="w-6 h-6" />,
-      color: "from-blue-500 to-blue-400"
-    }
+      title: "Total Score",
+      value: stats.totalScore,
+      icon: <Activity className="h-6 w-6 text-purple-500" />,
+      gradient: "from-purple-500 to-purple-600",
+      color: "text-purple-500",
+    },
   ]
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="lg:pl-64">
+      {/* Navigation Sidebar */}
+      <motion.div
+        initial={{ x: -100 }}
+        animate={{ x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg"
+      >
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-gray-800">MockMate</h2>
+          <div className="mt-8 space-y-2">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="w-full flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-lg"
+            >
+              <Activity className="h-5 w-5 mr-3" />
+              Dashboard
+            </button>
+            <button
+              onClick={() => navigate("/interview")}
+              className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              <Target className="h-5 w-5 mr-3" />
+              Interview
+            </button>
+            <button
+              onClick={() => navigate("/settings")}
+              className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              <Users className="h-5 w-5 mr-3" />
+              Settings
+            </button>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg mt-8"
+            >
+              <LogOut className="h-5 w-5 mr-3" />
+              Logout
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="ml-64 p-8">
         {/* Header */}
-        <motion.header 
+        <motion.header
           initial={{ y: -100 }}
           animate={{ y: 0 }}
-          className="border-b border-gray-200 h-16 fixed top-0 right-0 left-0 lg:left-64 flex items-center justify-between px-6 backdrop-blur-sm bg-white/80"
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-xl shadow-sm p-6 mb-8"
         >
-          <div className="flex items-center flex-1">
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              />
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Welcome back, {userData.username}!
+              </h1>
+              <p className="text-gray-600">
+                {userData.education} • {userData.interests}
+              </p>
             </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative p-2"
-            >
-              <Bell size={20} className="text-gray-600" />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
-            </motion.button>
-            <motion.div 
-              whileHover={{ scale: 1.1 }}
-              className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium"
-            >
-              {user?.username?.charAt(0).toUpperCase()}
-            </motion.div>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative p-2"
+              >
+                <Bell className="h-5 w-5 text-gray-600" />
+                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+              </motion.button>
+            </div>
           </div>
         </motion.header>
 
-        {/* Main content */}
-        <main className="p-6 pt-24">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {statsCards.map((card, index) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-lg shadow-sm p-6"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">{card.title}</p>
-                    <p className="text-2xl font-semibold mt-1">{card.value}</p>
-                  </div>
-                  <div className={`p-3 rounded-full bg-gradient-to-br ${card.color}`}>
-                    {card.icon}
-                  </div>
-        </div>
-              </motion.div>
-            ))}
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {statsCards.map((card, index) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">{card.title}</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-1">
+                    {card.value}
+                  </p>
+                </div>
+                <div className={`p-3 bg-gradient-to-br ${card.gradient} rounded-full text-white`}>
+                  {card.icon}
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-          {/* Performance Chart */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-lg font-semibold mb-4">Performance Overview</h2>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.questionsByMonth}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="score" fill="#3B82F6" />
-                </BarChart>
-              </ResponsiveContainer>
-        </div>
-      </div>
-
-          {/* Recent Activity */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
-            <div className="space-y-4">
-              {recentQuestions.map((question, index) => (
+        {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="bg-white rounded-xl shadow-sm p-6"
+        >
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Recent Activity
+          </h2>
+          <div className="space-y-4">
+            {stats.recentActivity.length > 0 ? (
+              stats.recentActivity.map((activity, index) => (
                 <motion.div
-                  key={question._id}
+                  key={index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-300"
                 >
                   <div>
-                    <p className="font-medium">{question.question}</p>
-                    <p className="text-sm text-gray-600">Score: {question.score}</p>
+                    <p className="font-medium text-gray-800">
+                      {activity.question}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Score: {activity.score || 0}
+                    </p>
                   </div>
-                  <div className="text-sm text-gray-500">
-                    {new Date(question.createdAt).toLocaleDateString()}
-         </div>
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
                 </motion.div>
-              ))}
-         </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">
+                No recent activity. Start practicing!
+              </p>
+            )}
           </div>
-        </main>
-       </div>
+        </motion.div>
+      </div>
     </div>
   )
 }
