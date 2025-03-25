@@ -13,6 +13,7 @@ function Interview() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("score", score);
@@ -149,8 +150,8 @@ function Interview() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <div className="lg:pl-64">
+      <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      <div className="lg:ml-64 p-4 lg:p-8">
         <main className="p-6">
           <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">

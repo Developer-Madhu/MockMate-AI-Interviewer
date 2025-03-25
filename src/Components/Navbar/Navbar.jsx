@@ -1,24 +1,27 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from "react-router-dom";
-import { useAuth } from "../../Pages/Auth/AuthContext"; // Adjust the import path as needed
+import { useAuth } from "../../Pages/Auth/AuthContext";
 
 const Navbar = () => {
-  const { user, isLoggedIn, logout } = useAuth(); // Get the authentication state and logout function
+  const { user, isLoggedIn, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const menuItems = [
     { name: 'Home', href: '#' },
-    { name: 'Features', href: '#features' },
+    { name: isLoggedIn ? 'Dashboard' : 'Features', href: isLoggedIn ? '/dashboard' : '#features' },
     { name: 'Pricing', href: '#pricing' },
     { name: 'About', href: '#about' },
   ];
+
+  const userInitial = user?.username?.charAt(0).toUpperCase() || 'U';
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Logo - Keeping the existing logo code */}
           <motion.div 
             className="flex-shrink-0"
             initial={{ opacity: 0, x: -20 }}
@@ -66,17 +69,60 @@ const Navbar = () => {
                 {item.name}
               </motion.a>
             ))}
-            <motion.button
-              className="px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-full text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: menuItems.length * 0.1 }}
-            >
-              Get Started
-            </motion.button>
+            
+            {/* Profile Icon or Get Started Button */}
+            {isLoggedIn ? (
+              <div className="relative">
+                <motion.div
+                  className="w-10 h-10 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 flex items-center justify-center text-white font-medium cursor-pointer shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {userInitial}
+                </motion.div>
+
+                {/* Profile Dropdown */}
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      className="absolute right-0 mt-2 w-48 rounded-xl bg-white shadow-lg py-1 ring-1 ring-black ring-opacity-5"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Link
+                        to="/settings"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-violet-600 transition-colors duration-300"
+                      >
+                        Settings
+                      </Link>
+                      <button
+                        onClick={logout}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 transition-colors duration-300"
+                      >
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <motion.button
+                className="px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-full text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: menuItems.length * 0.1 }}
+              >
+                Get Started
+              </motion.button>
+            )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Keeping existing code */}
           <motion.div 
             className="md:hidden"
             initial={{ opacity: 0, x: 20 }}
@@ -128,14 +174,31 @@ const Navbar = () => {
                     {item.name}
                   </motion.a>
                 ))}
-                <motion.button
-                  className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-full text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: menuItems.length * 0.1 }}
-                >
-                  Get Started
-                </motion.button>
+                {isLoggedIn ? (
+                  <>
+                    <Link
+                      to="/settings"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-violet-600 hover:bg-gray-50 transition-colors duration-300"
+                    >
+                      Settings
+                    </Link>
+                    <button
+                      onClick={logout}
+                      className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-gray-50 transition-colors duration-300"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <motion.button
+                    className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-full text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: menuItems.length * 0.1 }}
+                  >
+                    Get Started
+                  </motion.button>
+                )}
               </div>
             </motion.div>
           )}

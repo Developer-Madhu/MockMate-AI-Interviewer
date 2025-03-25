@@ -245,11 +245,7 @@ app.post('/interview', async (req, res) => {
                 const decoded = jwt.verify(token, 'supersecret12');
                 
                 const newQuestion = new Question({
-                    userId: decoded.id,
                     question: prompt,
-                    answer: result,
-                    feedback: "",
-                    score: 0
                 });
                 
                 await newQuestion.save();
@@ -303,22 +299,18 @@ app.post("/login", async (req, res) => {
     }
 
     try {
-        // ✅ Check if user exists
         const foundUser = await userModel.findOne({ email });
         if (!foundUser) {
             return res.json({ success: false, msg: "Invalid user" });
         }
 
-        // ✅ Compare password
         const matchPass = await bcrypt.compare(password, foundUser.password);
         if (!matchPass) {
             return res.json({ success: false, msg: "Invalid password!" });
         }
 
-        // ✅ Generate JWT token
         const webtokens = jwt.sign({ id: foundUser._id }, 'supersecret12', { expiresIn: '7d' });
 
-        // ✅ Set cookie
         res.cookie('token', webtokens, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -326,7 +318,6 @@ app.post("/login", async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
-        // ✅ Send success response
         return res.json({
             success: true, msg: "Login successful!", user: {
                 id: foundUser._id,
@@ -347,30 +338,30 @@ app.post("/login", async (req, res) => {
 
 });
 
-app.put('/settings', async(req,res) => {
-    const { username, email, education, interests } = req.body;
+// app.put('/settings', async(req,res) => {
+//     const { username, email, education, interests } = req.body;
 
-    console.log("Request Body:", req.body); // Log the request body
-    console.log("User ID from Token:", req.user.id); // Log the user ID from the token
+//     console.log("Request Body:", req.body); // Log the request body
+//     console.log("User ID from Token:", req.user.id); // Log the user ID from the token
   
-    try {
-      const user = await userModel.findById(req.user.id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+//     try {
+//       const user = await userModel.findById(req.user.id);
+//       if (!user) {
+//         return res.status(404).json({ message: "User not found" });
+//       }
   
-      user.username = username || user.username;
-      user.email = email || user.email;
-      user.education = education || user.education;
-      user.interests = interests || user.interests;
+//       user.username = username || user.username;
+//       user.email = email || user.email;
+//       user.education = education || user.education;
+//       user.interests = interests || user.interests;
   
-      await user.save();
-      res.status(200).json({ message: "User updated successfully", user });
-    } catch (error) {
-      console.error("Error updating user:", error); // Log the error
-      res.status(500).json({ message: "Server error", error: error.message });
-    }
-})
+//       await user.save();
+//       res.status(200).json({ message: "User updated successfully", user });
+//     } catch (error) {
+//       console.error("Error updating user:", error); // Log the error
+//       res.status(500).json({ message: "Server error", error: error.message });
+//     }
+// })
 
 // Middleware for protected routes
 function authenticateToken(req, res, next) {
