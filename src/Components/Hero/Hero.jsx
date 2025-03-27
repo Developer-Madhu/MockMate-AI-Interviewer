@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import guy from '../../assets/guy.png'
+import heroimg from '../../assets/heroimg.png'
 
 const Hero = () => {
   return (
@@ -48,7 +48,7 @@ const Hero = () => {
             {/* Main Image Container */}
             <div className="relative rounded-3xl overflow-visible p-2 animate-fade-in">
               <img 
-                src={guy} 
+                src={heroimg} 
                 alt="Interview Preparation"
                 className="w-full h-full object-cover rounded-2xl relative z-0"
               />
